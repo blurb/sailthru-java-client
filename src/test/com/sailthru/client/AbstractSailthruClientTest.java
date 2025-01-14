@@ -1,5 +1,6 @@
 package com.sailthru.client;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.sailthru.client.http.SailthruHttpClient;
 import com.sailthru.client.params.Send;
@@ -98,7 +99,7 @@ public class AbstractSailthruClientTest {
 
         sailthruClient.apiGet(ApiAction.send, ImmutableMap.<String,Object>of(Send.PARAM_SEND_ID, "some valid send id"));
         sailthruClient.apiGet(ApiAction.list, ImmutableMap.<String,Object>of("list", "some list"));
-        sailthruClient.apiPost(ApiAction.RETURN, ImmutableMap.of("email", "foo@bar.com", "items", Collections.emptyList()));
+        sailthruClient.apiPost(ApiAction.RETURN, ImmutableMap.of("email", "foo@bar.com", "items", ImmutableList.of()));
 
         LastRateLimitInfo sendRateLimitInfo = sailthruClient.getLastRateLimitInfo(ApiAction.send, AbstractSailthruClient.HttpRequestMethod.GET);
         assertEquals(sendLimit, sendRateLimitInfo.getLimit());
@@ -152,7 +153,7 @@ public class AbstractSailthruClientTest {
     public void testReturnUrl() throws IOException {
         CloseableHttpResponse response = getMockHttpResponseWithRateLimitHeaders(1, 1, new Date());
         doReturn(response).when(httpClient).execute(any(HttpHost.class), any(HttpRequest.class), (HttpContext)any());
-        sailthruClient.apiPost(ApiAction.RETURN, Collections.<String, Object>emptyMap());
+        sailthruClient.apiPost(ApiAction.RETURN, ImmutableMap.of());
         verify(httpClient).executeHttpRequest(eq("https://api.sailthru.com/return"), eq(AbstractSailthruClient.HttpRequestMethod.POST),
             any(Map.class), any(ResponseHandler.class), (Map)any());
     }
